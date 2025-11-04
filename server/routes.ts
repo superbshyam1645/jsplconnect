@@ -5,12 +5,10 @@ import { insertContactSubmissionSchema } from "@shared/schema";
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.hostinger.com", // Or use your actual SMTP host
-  port: 465,                  // Use 465 for SSL, or 587 for TLS/STARTTLS
-  secure: true,               // true for port 465
+  service: "SendGrid",
   auth: {
-    user: "info@jspl.org",
-    pass: process.env.SMTP_PASS, // Use env variable for safety!
+    user: "apikey",
+    pass: process.env.SENDGRID_API_KEY,
   },
 });
 

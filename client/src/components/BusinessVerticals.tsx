@@ -13,6 +13,7 @@ export default function BusinessVerticals() {
         "Premier clientele including Adani, Reliance, Tata",
         "End-to-end workforce solutions",
       ],
+      pdfUrl: "/attached_assets/JSPL GROUP OF COMPANIES.pdf"
     },
     {
       icon: Utensils,
@@ -24,6 +25,7 @@ export default function BusinessVerticals() {
         "Large-scale event management",
         "Kumbh Mela logistics expertise",
       ],
+      pdfUrl: "/attached_assets/JSPL GROUP OF COMPANIES.pdf"
     },
     {
       icon: Laptop,
@@ -35,6 +37,7 @@ export default function BusinessVerticals() {
         "Business automation",
         "Digital transformation",
       ],
+      pdfUrl: "/attached_assets/JSPL GROUP OF COMPANIES.pdf"
     },
   ];
 
@@ -80,10 +83,16 @@ export default function BusinessVerticals() {
                   ))}
                 </ul>
 
-                <button className="flex items-center gap-2 text-primary font-medium hover-elevate px-3 py-2 rounded-md -ml-3">
-                  Learn More
-                  <ArrowRight className="h-4 w-4" />
-                </button>
+<a
+  href="/attached_assets/JSPL GROUP OF COMPANIES.pdf"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex items-center gap-2 text-primary font-medium hover-elevate px-3 py-2 rounded-md -ml-3"
+>
+  Learn More
+  <ArrowRight className="h-4 w-4" />
+</a>
+
               </Card>
             );
           })}

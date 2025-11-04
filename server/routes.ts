@@ -2,17 +2,52 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactSubmissionSchema } from "@shared/schema";
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.hostinger.com", // Or use your actual SMTP host
+  port: 465,                  // Use 465 for SSL, or 587 for TLS/STARTTLS
+  secure: true,               // true for port 465
+  auth: {
+    user: "info@jspl.org",
+    pass: process.env.SMTP_PASS, // Use env variable for safety!
+  },
+});
+
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  app.post("/api/contact", async (req, res) => {
-    try {
-      const validatedData = insertContactSubmissionSchema.parse(req.body);
-      const submission = await storage.createContactSubmission(validatedData);
-      res.json({ success: true, data: submission });
-    } catch (error) {
-      res.status(400).json({ success: false, error: "Invalid submission data" });
-    }
-  });
+app.post("/api/contact", async (req, res) => {
+  try {
+    const validatedData = insertContactSubmissionSchema.parse(req.body);
+    const submission = await storage.createContactSubmission(validatedData);
+
+    // Send email to info@jspl.org
+    const mailBody = `
+New Inquiry from jspl.org:
+
+Full Name: ${validatedData.fullName}
+Email: ${validatedData.email}
+Phone: ${validatedData.phone || "-"}
+Company Name: ${validatedData.companyName || "-"}
+Message:
+${validatedData.message}
+`;
+
+    await transporter.sendMail({
+      from: '"Website Contact" <info@jspl.org>',
+      to: "info@jspl.org",
+      subject: "New Inquiry from Website Contact Form",
+      text: mailBody,
+      replyTo: validatedData.email
+    });
+
+    res.json({ success: true, data: submission });
+  } catch (error) {
+    console.error(error); // log for debugging
+    res.status(400).json({ success: false, error: "Invalid submission data or failed to send email" });
+  }
+});
+
 
   app.get("/api/contact-submissions", async (req, res) => {
     try {

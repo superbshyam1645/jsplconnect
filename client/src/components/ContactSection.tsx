@@ -168,8 +168,8 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <p className="font-medium mb-1">Email</p>
-                  <a href="mailto:info@jsplgroup.com" className="text-sm text-primary hover-elevate px-2 py-1 rounded -ml-2">
-                    info@jsplgroup.com
+                  <a href="mailto:info@jspl.org" className="text-sm text-primary hover-elevate px-2 py-1 rounded -ml-2">
+                    info@jspl.org
                   </a>
                 </div>
               </div>

@@ -1,16 +1,24 @@
+import dotenv from 'dotenv';
+dotenv.config();
+// Now use process.env.SENDGRID_API_KEY
+
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactSubmissionSchema } from "@shared/schema";
-import nodemailer from "nodemailer";
+// import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  service: "SendGrid",
-  auth: {
-    user: "apikey",
-    pass: process.env.SENDGRID_API_KEY,
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   service: "SendGrid",
+//   auth: {
+//     user: "apikey",
+//     pass: process.env.SENDGRID_API_KEY,
+//   },
+// });
+import sgMail from '@sendgrid/mail';
+console.log('SENDGRID', process.env.SENDGRID_API_KEY);
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -19,29 +27,26 @@ app.post("/api/contact", async (req, res) => {
     const validatedData = insertContactSubmissionSchema.parse(req.body);
     const submission = await storage.createContactSubmission(validatedData);
 
-    // Send email to info@jspl.org
-    const mailBody = `
-New Inquiry from jspl.org:
-
+    const msg = {
+      to: 'info@jspl.org', // destination
+      from: 'info@jspl.org', // your verified sender (must match SendGrid verified sender/domain)
+      subject: 'New Inquiry from Website Contact Form',
+      text: `
 Full Name: ${validatedData.fullName}
 Email: ${validatedData.email}
 Phone: ${validatedData.phone || "-"}
 Company Name: ${validatedData.companyName || "-"}
 Message:
 ${validatedData.message}
-`;
+`,
+      replyTo: validatedData.email,
+    };
 
-    await transporter.sendMail({
-      from: '"Website Contact" <info@jspl.org>',
-      to: "info@jspl.org",
-      subject: "New Inquiry from Website Contact Form",
-      text: mailBody,
-      replyTo: validatedData.email
-    });
+    await sgMail.send(msg);
 
     res.json({ success: true, data: submission });
   } catch (error) {
-    console.error(error); // log for debugging
+    console.error(error);
     res.status(400).json({ success: false, error: "Invalid submission data or failed to send email" });
   }
 });
